@@ -5,12 +5,12 @@ import matplotlib.pyplot as plt
 
 class SIRModel(object):
 
-    def __init__(self, N, days):
+    def __init__(self, N, days, I0=1, R0=0, contact_rate=0.2, mean_recovery_rate=1./10):
         self.N = N
-        self.I0, self.R0 = 1, 0
+        self.I0, self.R0 = I0, R0
         self.S0 = N - self.I0 - self.R0
         self.t = np.linspace(0, days-1, days)
-        self.beta, self.gamma = 0.2, 1./10
+        self.beta, self.gamma = contact_rate, mean_recovery_rate
         self.S, self.I, self.R = None, None, None
         self.changed = True
 
@@ -22,7 +22,6 @@ class SIRModel(object):
         return dSdt, dIdt, dRdt
 
     def integrate(self):
-        self.changed = False
         y0 = self.S0, self.I0, self.R0
         ret = odeint(self._deriv, y0, self.t, args=(
             self.N, self.beta, self.gamma))
@@ -35,5 +34,6 @@ class SIRModel(object):
         self.gamma = gamma
 
 
-sir = SIRModel(1000, 15)
+sir = SIRModel(1000, 15, R0=1)
+
 print(sir.t)
