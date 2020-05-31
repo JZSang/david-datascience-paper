@@ -134,16 +134,18 @@ for county_name in county_specific:
         # print(buffer)
         # plt.show()
         print("Processing r2 score for " + county_name)
-        from sklearn.metrics import r2_score
+        from sklearn.metrics import mean_squared_error
         sir.set_contact_rate(contact_rate_accurate)
         sir.set_mean_recovery_rate(mean_recovery_rate)
         sir.integrate()
         if len(county_pre.cases) <= 0 or len(sir.I) <= 0:
             continue
-        beforer2 = r2_score((county_pre.cases/1000), (sir.I+sir.R)/1000)
+        beforer2 = mean_squared_error(
+            (county_pre.cases), (sir.I+sir.R))
         if len(county.cases[buffer:]) != len((I+R)[:-buffer]):
             continue
-        afterr2 = r2_score(county.cases[buffer:]/1000, (I+R)[:-buffer]/1000)
+        afterr2 = mean_squared_error(
+            county.cases[buffer:], (I+R)[:-buffer])
 
         r2_score_by_name.append([county_name, beforer2, afterr2])
     except:
@@ -153,4 +155,4 @@ for county_name in county_specific:
 # %%
 r2_score_by_name_df = pd.DataFrame(r2_score_by_name, columns=[
                                    "COUNTY", "R2SCOREBEFORE", "R2SCOREAFTER"])
-r2_score_by_name_df.to_csv("./r2_score.csv")
+r2_score_by_name_df.to_csv("./mean_score.csv")
